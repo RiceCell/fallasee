@@ -38,7 +38,7 @@ async function analyzeFallacy() {
     
     <header class="mb-10 text-center">
       <h1 class="text-5xl font-bold text-blue-500 tracking-tight">Fallasee</h1>
-      <p class="text-slate-400 mt-2 italic">Exposing "boang" logic since 2026.</p>
+      <p class="text-slate-400 mt-2 italic">Logic professor in a pocket.</p>
     </header>
 
     <main class="w-full max-w-2xl space-y-6">
@@ -46,7 +46,7 @@ async function analyzeFallacy() {
       <div class="bg-slate-800 p-1 rounded-xl shadow-2xl border border-slate-700">
         <textarea 
           v-model="userInput"
-          placeholder="Paste a suspicious argument here..."
+          placeholder="Paste your argument here..."
           class="w-full bg-slate-900 p-4 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 h-44 resize-none text-lg transition-all"
         ></textarea>
       </div>
@@ -81,7 +81,7 @@ async function analyzeFallacy() {
     </main>
 
     <footer class="mt-auto pt-10 text-slate-500 text-sm">
-      Built by Rasil • Powered by Gemini 2.5
+      Built by Russel • Powered by Gemini 2.5
     </footer>
   </div>
 </template>
