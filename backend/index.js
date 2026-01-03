@@ -15,8 +15,21 @@ app.post('/api/analyze', async (req, res) => {
     try {
         const { text } = req.body;
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const prompt = `Analyze this for logical fallacies: "${text}". 
-                        Format your response clearly with the name of the fallacy and a short explanation that is at most four sentences.`;
+        const prompt = `Context: You are a logic and critical thinking professor. 
+                        Task: Analyze the provided text for logical fallacies.
+                        Text to analyze: "${text}".
+
+                        Instructions:
+                        1. If no clear fallacy is present, state that the argument appears logically sound and suggest one way to strengthen the evidence further.
+                        2. If fallacies are found, identify them by name, and make it bold.
+                        3. For each fallacy, provide a concise explanation (max 4 sentences) of why the logic fails in this specific context.
+                        4. Conclude with a single sentence of constructive advice to help the user improve the persuasiveness and validity of their claim.
+                        
+                        Response Format:
+                        [Fallacy Name]
+                        Explanation: [Explanation]
+                        Advice: [Advice]
+                        Add a space before every bullet.`;
 
         const result = await model.generateContent(prompt);
         res.json({ analysis: result.response.text() });
