@@ -15,27 +15,32 @@ app.post('/api/analyze', async (req, res) => {
     try {
         const { text } = req.body;
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-        const prompt = `Context: You are a logic and critical thinking professor. 
-                        Task: Analyze the provided text for logical fallacies.
-                        Text to analyze: "${text}".
 
-                        Instructions:
-                        1. If no clear fallacy is present, state that the argument appears logically sound and suggest one way to strengthen the evidence further.
-                        2. If fallacies are found, identify them by name, and make it bold.
-                        3. For each fallacy, provide a concise explanation (max 4 sentences) of why the logic fails in this specific context.
-                        4. Conclude with a single sentence of constructive advice to help the user improve the persuasiveness and validity of their claim.
-                        
-                        Response Format:
-                        [Fallacy Name]
-                        Explanation: [Explanation]
-                        Advice: [Advice]
-                        Add a space before every bullet.`;
+        // tell Gemini to return ONLY JSON
+        const prompt = `Context: You are a logic and critical thinking professor. 
+                        Analyze the text for logical fallacies: "${text}".
+
+                        Response Format: Return ONLY a JSON object.
+                        Do not use asterisks (**), hashtags, or markdown inside the JSON values.
+                        {
+                          "name": "Fallacy Name (Bold)",
+                          "explanation": "Concise explanation (max 4 sentences)",
+                          "rating": "Argument Grade: [score out of 100]",
+                          "advice": "How to avoid this mistake",
+                          "reframe": "1-2 sentence sound version"
+                        }
+
+                        If no fallacies are found, use "None" for name and congratulate the user in the explanation.`;
 
         const result = await model.generateContent(prompt);
-        res.json({ analysis: result.response.text() });
+        let responseText = result.response.text();
+
+        const cleanJson = responseText.replace(/```json|```/g, "").trim();
+
+        res.json(JSON.parse(cleanJson));
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Professor is confused. Check your API key or connection." });
+        res.status(500).json({ error: "Professor is very confused." });
     }
 });
 
