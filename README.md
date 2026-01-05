@@ -34,6 +34,7 @@ Working on the free tier, I hit the `429 Too Many Requests` quota limit.
 - [x] Basic API Connection
 - [x] JSON Chopping & Component UI
 - [x] Fallacy "Reframe" Logic
+- [ ] Making it into an extension
 - [ ] **History Sidebar** (Soon! Maybe!)
 
 
