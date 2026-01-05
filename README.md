@@ -25,7 +25,7 @@ A major challenge was the AI's tendency to include Markdown symbols (like `**`) 
 1. **Prompt Hardening**: Refined the system instructions to explicitly forbid markdown characters in the response.
 2. **Frontend Regex Scrubbing**: Added a JavaScript sanitization layer that uses regular expressions (`.replace(/\*/g, '')`) to strip any stray asterisks before the text is rendered.
 
-### Error Handling & Rate Limiting
+### Limitations
 Working on the free tier, I hit the `429 Too Many Requests` quota limit.
 
 ---
