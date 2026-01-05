@@ -23,9 +23,9 @@ async function analyzeFallacy() {
     } catch (error) {
     result.value = {
         name: "Professor is Tired",
-        explanation: "I've analyzed too many fallacies today! My brain (API Quota) needs a short nap.",
+        explanation: "I've analyzed too many fallacies today! My brain (Gemini API Quota lmfao) needs a short nap.",
         rating: "0/5",
-        advice: "Wait about a minute and try again, Boang.",
+        advice: "Try again tomorrow broskie <3",
         reframe: "Patience is a virtue—try again shortly!"
     };
 } finally {
