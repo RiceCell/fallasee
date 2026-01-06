@@ -16,7 +16,6 @@ app.post('/api/analyze', async (req, res) => {
         const { text } = req.body;
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-        // tell Gemini to return ONLY JSON
         const prompt = `Context: You are a logic and critical thinking professor. 
                         Analyze the text for logical fallacies: "${text}".
 
@@ -40,7 +39,11 @@ app.post('/api/analyze', async (req, res) => {
         res.json(JSON.parse(cleanJson));
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Professor is very confused." });
+        if (error.status === 503) {
+            res.status(503).json({ error: "The Professor is busy. Try again in a moment." });
+        } else {
+            res.status(500).json({ error: "Professor is very confused." });
+        }
     }
 });
 
