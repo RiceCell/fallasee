@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai"; // Added SchemaType
 
 dotenv.config({ quiet: true });
 
@@ -11,39 +11,58 @@ app.use(express.json());
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// "Shape" of the data here
+const schema = {
+    description: "Fallacy analysis schema",
+    type: SchemaType.OBJECT,
+    properties: {
+        name: {
+            type: SchemaType.STRING,
+            description: "The name of the fallacy, or 'None' if logical.",
+        },
+        explanation: {
+            type: SchemaType.STRING,
+            description: "Brief explanation of the logic.",
+        },
+        rating: {
+            type: SchemaType.STRING,
+            description: "Score out of 100.",
+        },
+        advice: {
+            type: SchemaType.STRING,
+            description: "Give tough-love advice using student slang like 'broskie', 'lowkey', 'slay!', 'for real', or 'no cap'. Be blunt."
+        },
+        reframe: {
+            type: SchemaType.STRING,
+            description: "A better version of the argument.",
+        },
+    },
+    required: ["name", "explanation", "rating", "advice", "reframe"],
+};
+
 app.post('/api/analyze', async (req, res) => {
     try {
         const { text } = req.body;
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-        const prompt = `Context: You are a logic and critical thinking professor. 
-                        Analyze the text for logical fallacies: "${text}".
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.5-flash",
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: schema,
+            },
+        });
 
-                        Response Format: Return ONLY a JSON object.
-                        Do not use asterisks (**), hashtags, or markdown inside the JSON values.
-                        {
-                          "name": "Fallacy Name (Bold)",
-                          "explanation": "Concise explanation (max 4 sentences)",
-                          "rating": "Argument Grade: [score out of 100]",
-                          "advice": "How to avoid this mistake",
-                          "reframe": "1-2 sentence sound version"
-                        }
-
-                        If no fallacies are found, use "None" for name and congratulate the user in the explanation.`;
+        const prompt = `Analyze this text for logical fallacies: "${text}". 
+                        If no fallacies are found, set name to 'None'.`;
 
         const result = await model.generateContent(prompt);
-        let responseText = result.response.text();
 
-        const cleanJson = responseText.replace(/```json|```/g, "").trim();
+        res.json(JSON.parse(result.response.text()));
 
-        res.json(JSON.parse(cleanJson));
     } catch (error) {
         console.error(error);
-        if (error.status === 503) {
-            res.status(503).json({ error: "The Professor is busy. Try again in a moment." });
-        } else {
-            res.status(500).json({ error: "Professor is very confused." });
-        }
+        const status = error.status === 503 ? 503 : 500;
+        res.status(status).json({ error: "Professor is having a moment." });
     }
 });
 
